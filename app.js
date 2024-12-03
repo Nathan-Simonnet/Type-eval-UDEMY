@@ -42,28 +42,36 @@ function textModelDisplayer() {
 };
 
 let lettersIndex = 0;
+let scoreCount = 0;
+const scoreDisplay = document.getElementById('score');
 const textArea = document.getElementById('textArea');
 textArea.addEventListener('keydown', (e) => {
-    // console.log(e.target.value, e.key,quote[lettersIndex]);
     sentenceChecker(e.key, e.target);
 });
+
+function reloadQuote() {
+    lettersIndex = 0;
+    function clearAllChildren(element) {
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    }
+    clearAllChildren(textModelContainer);
+    setTimeout(() => { textArea.value = ""; }, 100);
+    quotesFetcher();
+}
 
 function sentenceChecker(key, textArea) {
     if (key === quote[lettersIndex] && textArea.value === quote.slice(0, lettersIndex)) {
         textArea.readOnly = false;
-        document.getElementById('letter' + lettersIndex).classList.remove('incorrect')
-        document.getElementById('letter' + lettersIndex).classList.add('correct')
+        document.getElementById('letter' + lettersIndex).classList.remove('incorrect');
+        document.getElementById('letter' + lettersIndex).classList.add('correct');
         lettersIndex++;
+        scoreCount++;
+        // console.log(lettersIndex,scoreCount)
+        scoreDisplay.textContent = scoreCount;
         if (lettersIndex == quote.length) {
-            lettersIndex = 0;
-            function clearAllChildren(element) {
-                while (element.firstChild) {
-                    element.removeChild(element.firstChild);
-                }
-            }
-            clearAllChildren(textModelContainer);
-            setTimeout(() => {textArea.value = "";},100);
-            quotesFetcher();
+            reloadQuote()
         }
     } else {
         document.getElementById('letter' + lettersIndex).classList.add('incorrect');
@@ -71,9 +79,44 @@ function sentenceChecker(key, textArea) {
     }
 }
 
+// TIMER
+// ====================================
+let timerCount = 60;
+let timerSetime;
+const timerDisplay = document.getElementById('timer')
+function timerHnadler() {
+    if (timerCount === 0) {
+        textArea.disabled = true;
+        scoreCount = 0;
+        return
+    } else {
+        timerCount--;
+        timerDisplay.textContent = timerCount;
+        timerSetime =   setTimeout(() => {
+            timerHnadler()
+        }, 1000)
+    }
+}
+timerHnadler()
 
+// Restart
+// =================================
 
+function reloadGame() {
+    textArea.disabled = false;
+    clearInterval(timerSetime)
+    timerDisplay.textContent = 60;
+    scoreDisplay.textContent = 0;
+    timerCount = 60;
+    reloadQuote()
+    setTimeout(() => {
+        timerHnadler()
+    },1000)
+}
 
-
-
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        reloadGame();
+    }
+});
 
