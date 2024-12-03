@@ -45,11 +45,12 @@ let lettersIndex = 0;
 const textArea = document.getElementById('textArea');
 textArea.addEventListener('keydown', (e) => {
     // console.log(e.target.value, e.key,quote[lettersIndex]);
-    sentenceChecker(e.key, e.target.value);
+    sentenceChecker(e.key, e.target);
 });
 
-function sentenceChecker(key, textAreaValue) {
-    if (key === quote[lettersIndex] && textAreaValue === quote.slice(0, lettersIndex)) {
+function sentenceChecker(key, textArea) {
+    if (key === quote[lettersIndex] && textArea.value === quote.slice(0, lettersIndex)) {
+        textArea.readOnly = false;
         document.getElementById('letter' + lettersIndex).classList.remove('incorrect')
         document.getElementById('letter' + lettersIndex).classList.add('correct')
         lettersIndex++;
@@ -65,7 +66,8 @@ function sentenceChecker(key, textAreaValue) {
             quotesFetcher();
         }
     } else {
-        document.getElementById('letter' + lettersIndex).classList.add('incorrect')
+        document.getElementById('letter' + lettersIndex).classList.add('incorrect');
+        textArea.readOnly = true;
     }
 }
 
